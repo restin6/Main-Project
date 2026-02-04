@@ -1,74 +1,84 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 
 function Signup() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    email: '',
-    phone: '',
-    otp: ''
-  });
-  
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1); // Step 1: Signup, Step 2: OTP
   const [showPassword, setShowPassword] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '', name: '', email: '', phone: '', password: '', otp: ''
+  });
 
-  const sendOtp = async () => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Step 1: Submit Details & Trigger OTP
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:8000/api/send-otp/', { email: formData.email });
-      setOtpSent(true);
-      alert("OTP sent to your email!");
+      // 1. Save user to DB & Send OTP
+      await axios.post('http://127.0.0.1:8000/api/signup/', formData);
+      alert("Details saved! Please check the terminal for your OTP.");
+      setStep(2); // Move to OTP step
     } catch (err) {
-      alert("Failed to send OTP. Check your email address.");
+      alert("Error during signup. Username or Email might already exist.");
     }
   };
 
-  const handleSignup = async (e) => {
+  // Step 2: Verify OTP & Go to Dashboard
+  const handleVerifyOTP = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:8000/api/signup/', formData);
-      alert("Account Verified & Created!");
+      const response = await axios.post('http://127.0.0.1:8000/api/verify-otp/', {
+        email: formData.email,
+        otp: formData.otp
+      });
+      
+      // Save token and go to dashboard
+      localStorage.setItem('token', response.data.token);
+      alert("Verification successful!");
+      navigate('/dashboard');
     } catch (err) {
-      alert("Error: " + (err.response?.data?.error || "Signup failed"));
+      alert("Invalid OTP. Please check the terminal again.");
     }
   };
 
   return (
     <div className="signup-container">
-      <div className="signup-card">
-        <h2>Staff Registration</h2>
-        <form onSubmit={handleSignup}>
-          <input type="text" placeholder="Full Name" onChange={(e) => setFormData({...formData, username: e.target.value})} required />
+      {step === 1 ? (
+        <form className="signup-card" onSubmit={handleSignupSubmit}>
+          <h2>Staff Registration</h2>
+          <input name="name" placeholder="Full Name" onChange={handleChange} required />
+          <input name="username" placeholder="Username" onChange={handleChange} required />
+          <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+          <input name="phone" placeholder="Phone Number" onChange={handleChange} required />
           
-          <input type="email" placeholder="Email" onChange={(e) => setFormData({...formData, email: e.target.value})} required />
-          <button type="button" className="otp-button" onClick={sendOtp}>Send OTP</button>
-
-          {otpSent && (
-            <input type="text" placeholder="Enter OTP" onChange={(e) => setFormData({...formData, otp: e.target.value})} required />
-          )}
-
-          <input type="text" placeholder="Phone Number" onChange={(e) => setFormData({...formData, phone: e.target.value})} required />
-
-          <div className="password-container">
+          <div className="password-field">
             <input 
+              name="password" 
               type={showPassword ? "text" : "password"} 
               placeholder="Password" 
-              onChange={(e) => setFormData({...formData, password: e.target.value})} 
+              onChange={handleChange} 
               required 
             />
-            <button 
-              type="button" 
-              onClick={() => setShowPassword(!showPassword)}
-              style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
-            >
+            <button type="button" onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? "👁️" : "🙈"}
             </button>
           </div>
-
-          <button type="submit" className="signup-button">Verify & Register</button>
+          
+          <button type="submit" className="signup-btn">Register & Send OTP</button>
         </form>
-      </div>
+      ) : (
+        <form className="signup-card" onSubmit={handleVerifyOTP}>
+          <h2>Verify Email</h2>
+          <p>An OTP has been sent to {formData.email}</p>
+          <input name="otp" placeholder="Enter 6-digit OTP" onChange={handleChange} required />
+          <button type="submit" className="verify-btn">Verify & Login</button>
+        </form>
+      )}
     </div>
   );
 }

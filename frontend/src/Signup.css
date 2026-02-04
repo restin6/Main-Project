@@ -1,58 +1,7 @@
-.signup-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.signup-card {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    width: 100%;
-    max-width: 450px; /* Made slightly wider */
-    text-align: center;
-}
-
-.signup-card h2 { color: #1e3a8a; margin-bottom: 20px; }
-
-.signup-card input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-
-.signup-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #10b981; /* Green for "Register" */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 15px;
-}
-
-.password-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.otp-button {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
+.signup-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: #f1f5f9; }
+.signup-card { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 350px; display: flex; flex-direction: column; gap: 15px; }
+.password-field { display: flex; position: relative; }
+.password-field input { width: 100%; }
+.password-field button { position: absolute; right: 10px; top: 25%; background: none; border: none; color: #3b82f6; cursor: pointer; font-size: 0.8rem; }
+.signup-btn, .verify-btn { background: #1e3a8a; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.signup-btn:hover { background: #3b82f6; }

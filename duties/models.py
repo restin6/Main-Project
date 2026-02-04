@@ -8,6 +8,7 @@ class StaffProfile(models.Model):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     duty_count = models.IntegerField(default=0)
+    timetable = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return self.user.username
